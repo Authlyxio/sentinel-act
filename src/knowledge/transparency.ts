@@ -6,9 +6,18 @@ export interface TransparencyTrigger {
   article: string;
   duty: string;
   responsible: Role;
+  /** Timing or scope caveats that qualify the duty. */
+  note?: string;
 }
 
-/** Article 50 — transparency obligations. These co-apply on top of the risk tier. */
+/**
+ * Article 50 — transparency obligations. These co-apply on top of the risk tier.
+ *
+ * In force since 2 August 2026 and untouched by the Digital Omnibus, which
+ * deferred the high-risk regimes but left Art 50 on its original schedule.
+ * Duty-bearers are providers and deployers; importers and distributors fall
+ * within the Act's scope (Art 2) but carry no Art 50 duties of their own.
+ */
 export const TRANSPARENCY_TRIGGERS: TransparencyTrigger[] = [
   {
     key: "directInteraction",
@@ -23,6 +32,8 @@ export const TRANSPARENCY_TRIGGERS: TransparencyTrigger[] = [
     article: "Art 50(2)",
     duty: "Mark outputs in a machine-readable format and make them detectable as artificially generated or manipulated.",
     responsible: "provider",
+    note:
+      "Generative AI systems already on the market before 2 Aug 2026 have until 2 Dec 2026 to meet this marking duty. The grace period is narrow: it does not cover systems placed on the market on or after 2 Aug 2026, and it does not affect the Art 50(4) deployer duties, which applied from 2 Aug 2026.",
   },
   {
     key: "deepfake",

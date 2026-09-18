@@ -6,9 +6,8 @@ export interface ProhibitedPractice {
   article: string;
   summary: string;
   /**
-   * `YYYY-MM-DD`, where the prohibition applies later than Article 5 as a
-   * whole (2 February 2025). Set only for the two points Regulation (EU)
-   * 2026/1744 added, which apply from 2 December 2026.
+   * Date the prohibition starts to apply, when it is not one of the original
+   * Art 5 bans that took effect on 2 Feb 2025. Absent means already in force.
    */
   appliesFrom?: string;
 }
@@ -63,20 +62,25 @@ export const PROHIBITED_PRACTICES: ProhibitedPractice[] = [
     article: "Art 5(1)(h)",
     summary: "Real-time remote biometric identification in publicly accessible spaces for law-enforcement purposes, save narrowly defined exceptions.",
   },
+  // Inserted into Art 5(1) as points (ba) and (bb) by Regulation (EU)
+  // 2026/1744 (OJ 24 Jul 2026); both apply from 2 Dec 2026 under the amended
+  // Art 113. 0.2.0 cited them together as "Art 5 (as amended by the Digital
+  // Omnibus)" while the numbering was unconfirmed. They are separate points, so
+  // they are separate entries: a system can be caught by one and not the other.
   {
     key: "nonConsensualIntimateImagery",
-    title: "Generating non-consensual intimate imagery",
+    title: "AI-generated non-consensual intimate imagery",
     article: "Art 5(1)(ba)",
     summary:
-      "Generating or manipulating realistic images, video, audio or similar material of an identifiable person's intimate parts, or of an identifiable person engaged in sexually explicit activity, without that person's explicit consent. Inserted by Regulation (EU) 2026/1744.",
+      "Placing on the market, putting into service, or using AI systems that generate or manipulate realistic intimate imagery of an identifiable person without their free and explicit consent. For providers this reaches systems where such output is a reasonably foreseeable and reproducible outcome absent adequate technical safeguards.",
     appliesFrom: "2026-12-02",
   },
   {
     key: "childSexualAbuseMaterial",
-    title: "Generating child sexual abuse material",
+    title: "AI-generated child sexual abuse material",
     article: "Art 5(1)(bb)",
     summary:
-      "Generating or manipulating material within the meaning of Directive 2011/93/EU (child sexual abuse material). Inserted by Regulation (EU) 2026/1744.",
+      "Placing on the market, putting into service, or using AI systems that generate child sexual abuse material within the meaning of Directive 2011/93/EU. For providers this reaches systems where such output is a reasonably foreseeable and reproducible outcome absent adequate technical safeguards.",
     appliesFrom: "2026-12-02",
   },
 ];

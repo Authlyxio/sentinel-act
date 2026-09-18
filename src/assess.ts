@@ -3,7 +3,7 @@ import { DISCLAIMER } from "./types.js";
 import { classify } from "./classify.js";
 import { obligationsFor } from "./obligations.js";
 import { TRANSPARENCY_TRIGGERS } from "./knowledge/transparency.js";
-import { timelineAsOf } from "./knowledge/timeline.js";
+import { TIMELINE } from "./knowledge/timeline.js";
 import { KB_VERSION } from "./knowledge/index.js";
 
 /** Full readiness assessment for a system profile. Pure — no I/O. */
@@ -14,17 +14,13 @@ export function assess(p: SystemProfile): Assessment {
     id: `TR-${t.key}`,
     title: t.title,
     article: t.article,
-    summary: t.duty,
+    summary: t.note ? `${t.duty} ${t.note}` : t.duty,
     appliesTo: t.responsible,
     tier: "limited",
   }));
 
-  // One clock for the whole assessment, so the timeline's statuses are the
-  // statuses on the day the report says it was produced.
-  const now = new Date();
-
   return {
-    assessedAt: now.toISOString(),
+    assessedAt: new Date().toISOString(),
     kbVersion: KB_VERSION,
     system: { name: p.name, role: p.role },
     tier,
@@ -32,7 +28,7 @@ export function assess(p: SystemProfile): Assessment {
     rationale: [...rationale, ...transparency],
     transparencyObligations,
     obligations: obligationsFor(tier, p),
-    timeline: timelineAsOf(now),
+    timeline: TIMELINE,
     disclaimer: DISCLAIMER,
   };
 }

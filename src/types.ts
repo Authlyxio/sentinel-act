@@ -11,8 +11,6 @@ export type ProhibitedKey =
   | "emotionRecognitionWorkEducation"
   | "biometricCategorizationSensitive"
   | "realtimeRemoteBiometricIdPublic"
-  // Art 5(1)(ba) and (bb), inserted by Regulation (EU) 2026/1744. Both apply
-  // from 2 December 2026 — see `appliesFrom` on each practice.
   | "nonConsensualIntimateImagery"
   | "childSexualAbuseMaterial";
 
@@ -87,29 +85,13 @@ export interface ChecklistItem {
   status: "todo";
 }
 
-/** A dated milestone as the knowledge base records it. */
-export interface TimelineMilestone {
+export interface TimelineEntry {
   milestone: string;
-  /** `YYYY-MM-DD`. */
   date: string;
-  note?: string;
-  /**
-   * True for a change that is proposed but not law. Its status stays
-   * "proposed change" whatever its date, because a proposal does not become
-   * law by its date arriving.
-   */
-  proposed?: boolean;
-}
-
-/**
- * A milestone with its status on the day of assessment.
- *
- * The status is DERIVED from the date by `timelineAsOf`, never stored: a
- * stored status is correct on the day it is written and wrong from the day
- * the date passes, which is how "2026-08-02: upcoming" outlived its own date.
- */
-export interface TimelineEntry extends TimelineMilestone {
   status: "in force" | "upcoming" | "proposed change";
+  note?: string;
+  /** Marks milestones that gate the high-risk regime specifically. */
+  track?: "high";
 }
 
 export interface Assessment {

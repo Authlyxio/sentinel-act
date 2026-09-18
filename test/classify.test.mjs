@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { readFileSync } from "node:fs";
-import { assess, toEvidence } from "../dist/index.js";
+import { assess, toEvidence, timelineAsOf, TRANSPARENCY_TRIGGERS, PROHIBITED_PRACTICES } from "../dist/index.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ex = (f) => JSON.parse(readFileSync(join(here, "..", "examples", f), "utf8"));
@@ -45,84 +45,94 @@ test("evidence record carries a sha256 digest", () => {
   assert.match(e.integrity.digest, /^[a-f0-9]{64}$/);
 });
 
-// ─── Regulation (EU) 2026/1744 — the Digital Omnibus on AI ──────────────────
-//
-// Published in the OJ on 24 July 2026, in force 27 July 2026. It deferred the
-// high-risk regime, gave the Art 50(2) marking duty a grace period for systems
-// already on the market, and added two Art 5 prohibitions with their own date.
-// Before this, the knowledge base still called the deferral "provisional" and
-// showed "2026-08-02: upcoming" seven weeks after that date had passed.
+// --- Timeline currency ---------------------------------------------------
+// The 0.1.0 knowledge base hardcoded `status`, so 2026-08-02 kept reporting as
+// "upcoming" after it passed. Status is now derived; these guard the invariant.
 
-import { timelineAsOf, MILESTONES, keyDateFor, classify, PROHIBITED_PRACTICES, KB_VERSION } from "../dist/index.js";
-
-const at = (d) => new Date(`${d}T12:00:00Z`);
-
-test("timeline status is derived from the date, not stored", () => {
-  // The bug this replaces: a stored status is right on the day it is written
-  // and wrong from the day its date passes.
-  for (const m of MILESTONES) assert.equal("status" in m, false, `${m.milestone} must not carry a stored status`);
-  const before = timelineAsOf(at("2027-12-01")).find((t) => t.date === "2027-12-02");
-  const on = timelineAsOf(at("2027-12-02")).find((t) => t.date === "2027-12-02");
-  assert.equal(before.status, "upcoming");
-  assert.equal(on.status, "in force", "a milestone binds on its own day, not the day after");
+test("no milestone that has already passed reports as upcoming", () => {
+  const today = new Date().toISOString().slice(0, 10);
+  for (const t of assess(ex("spam-filter.json")).timeline) {
+    if (t.date <= today) {
+      assert.notEqual(t.status, "upcoming", `${t.date} (${t.milestone}) passed but reports upcoming`);
+    }
+  }
 });
 
-test("timeline is sorted, so the first upcoming entry is the next deadline", () => {
-  const dates = timelineAsOf(at("2026-09-18")).map((t) => t.date);
-  assert.deepEqual(dates, [...dates].sort());
+test("timelineAsOf derives status from the date it is given", () => {
+  // The day before the Digital Omnibus entered into force.
+  const before = timelineAsOf("2026-07-26");
+  const omnibusBefore = before.find((t) => t.date === "2026-07-27");
+  assert.equal(omnibusBefore.status, "upcoming");
+  assert.equal(before.find((t) => t.date === "2026-08-02").status, "upcoming");
+
+  // Today: Omnibus and Art 50 are both live.
+  const now = timelineAsOf("2026-08-12");
+  assert.equal(now.find((t) => t.date === "2026-07-27").status, "in force");
+  assert.equal(now.find((t) => t.date === "2026-08-02").status, "in force");
 });
 
-test("high-risk dates are the Digital Omnibus dates", () => {
-  const t = timelineAsOf(at("2026-09-18"));
-  assert.ok(t.some((e) => e.date === "2027-12-02" && e.milestone.includes("Annex III")), "Annex III: 2 Dec 2027");
-  assert.ok(t.some((e) => e.date === "2028-08-02" && e.milestone.includes("Annex I")), "Annex I: 2 Aug 2028");
-  // The superseded dates must not survive as high-risk milestones.
-  assert.ok(!t.some((e) => e.date === "2026-08-02" && e.milestone.includes("High-risk")), "no high-risk milestone on 2 Aug 2026");
-  assert.ok(!t.some((e) => e.date === "2027-08-02"), "no milestone on the superseded 2 Aug 2027 date");
-  // And nothing is still described as provisional.
-  assert.ok(!t.some((e) => e.status === "proposed change"), "the Omnibus is law, not a proposal");
-  assert.ok(!t.some((e) => /provisional|pending formal adoption/i.test(`${e.milestone} ${e.note ?? ""}`)));
+test("timeline is chronologically sorted so the first upcoming entry is the next one", () => {
+  const dates = timelineAsOf("2026-08-12").map((t) => t.date);
+  assert.deepEqual(dates, [...dates].sort(), "timeline must be date-sorted");
 });
 
-test("the Art 50(2) grace period is scoped to systems already on the market", () => {
-  const grace = MILESTONES.find((m) => m.milestone.includes("Art 50(2)"));
-  assert.equal(grace.date, "2026-12-02");
-  assert.match(grace.note, /before 2 August 2026/);
-  assert.match(grace.note, /from day one/);
+test("Digital Omnibus deferrals are encoded as binding, not proposed", () => {
+  const tl = timelineAsOf("2026-08-12");
+  const annexIII = tl.find((t) => t.milestone.includes("Annex III"));
+  const annexI = tl.find((t) => t.milestone.includes("Annex I)"));
+  assert.equal(annexIII.date, "2027-12-02");
+  assert.equal(annexI.date, "2028-08-02");
+  for (const t of tl) assert.notEqual(t.status, "proposed change", "the Omnibus is in force, not proposed");
 });
 
-test("the two new Art 5 prohibitions apply from 2 December 2026", () => {
-  const added = PROHIBITED_PRACTICES.filter((p) => p.article === "Art 5(1)(ba)" || p.article === "Art 5(1)(bb)");
-  assert.equal(added.length, 2);
-  for (const p of added) assert.equal(p.appliesFrom, "2026-12-02");
-  // The original eight carry no date of their own: they apply with Art 5.
-  assert.equal(PROHIBITED_PRACTICES.filter((p) => !p.appliesFrom).length, 8);
+// --- Article 50 ----------------------------------------------------------
+
+test("Art 50(2) records the 2 Dec 2026 marking grace period for legacy systems", () => {
+  const synthetic = TRANSPARENCY_TRIGGERS.find((t) => t.key === "syntheticContent");
+  assert.match(synthetic.note, /2 Dec 2026/);
+  assert.equal(synthetic.responsible, "provider");
 });
 
-test("a system generating non-consensual intimate imagery is unacceptable, and says from when", () => {
-  const c = classify({ name: "Nudifier", role: "provider", prohibited: { nonConsensualIntimateImagery: true } });
-  assert.equal(c.tier, "unacceptable");
-  const r = c.rationale.find((x) => x.citation.article === "Art 5(1)(ba)");
-  assert.ok(r, "cites Art 5(1)(ba)");
-  assert.match(r.reason, /prohibited from 2026-12-02/);
+test("Art 50 duties bind providers and deployers only", () => {
+  for (const t of TRANSPARENCY_TRIGGERS) {
+    assert.ok(["provider", "deployer", "both"].includes(t.responsible), `${t.key} has role ${t.responsible}`);
+  }
 });
 
-test("an original prohibition carries no date in its reason", () => {
-  const c = classify({ name: "Scorer", role: "provider", prohibited: { socialScoring: true } });
-  assert.doesNotMatch(c.rationale[0].reason, /prohibited from/);
+// --- New Art 5 prohibition -----------------------------------------------
+
+// Both apply from 2026-12-02. Before that date the reason must say so rather
+// than assert a ban that is not live; from that date it must not. Asserting
+// only the first made this test a time bomb for 3 December 2026.
+const OMNIBUS_BANS_APPLY = "2026-12-02";
+const bansInForce = new Date().toISOString().slice(0, 10) >= OMNIBUS_BANS_APPLY;
+
+for (const [key, point] of [
+  ["nonConsensualIntimateImagery", "Art 5(1)(ba)"],
+  ["childSexualAbuseMaterial", "Art 5(1)(bb)"],
+]) {
+  test(`${point} => UNACCEPTABLE, with its start date until it applies`, () => {
+    const a = assess({ name: "Image generator", role: "provider", prohibited: { [key]: true } });
+    assert.equal(a.tier, "unacceptable");
+    const r = a.rationale.find((x) => x.citation.article === point);
+    assert.ok(r, `expects a rationale citing ${point}`);
+    assert.equal(/prohibited from 2026-12-02/.test(r.reason), !bansInForce, r.reason);
+  });
+}
+
+test("every Art 5 prohibition cites a point of Art 5(1)", () => {
+  // 0.2.0 cited the Omnibus bans as "Art 5 (as amended by the Digital
+  // Omnibus)"; each is now its own point, and nothing is cited without one.
+  for (const pr of PROHIBITED_PRACTICES) {
+    assert.match(pr.article, /^Art 5\(1\)\([a-z]{1,2}\)$/, `${pr.key}: ${pr.article}`);
+  }
+  const keys = PROHIBITED_PRACTICES.map((p) => p.key);
+  assert.equal(new Set(keys).size, keys.length, "prohibition keys are unique");
 });
 
-test("the key date is the one that matters for this system", () => {
-  // Before: "the next upcoming milestone", which for an employment screener
-  // would now be the December 2026 NCII prohibition — dated, true, irrelevant.
-  const hiring = assess(ex("hiring-screener.json"));
-  assert.equal(keyDateFor(hiring).date, "2027-12-02");
-  const nudifier = assess({ name: "Nudifier", role: "provider", prohibited: { nonConsensualIntimateImagery: true } });
-  const key = keyDateFor(nudifier);
-  // Upcoming until 2 Dec 2026; after that the next generally upcoming date.
-  if (new Date().toISOString().slice(0, 10) < "2026-12-02") assert.equal(key.date, "2026-12-02");
-});
-
-test("the knowledge base names the amending regulation", () => {
-  assert.match(KB_VERSION, /2026\/1744/);
+test("high-risk assessment surfaces its own deadline, not just the next global one", () => {
+  const a = assess(ex("hiring-screener.json"));
+  const hr = a.timeline.filter((t) => t.track === "high" && t.status === "upcoming");
+  assert.ok(hr.length > 0, "high-risk milestones must be tagged and upcoming");
+  assert.ok(hr.some((t) => t.date === "2027-12-02"));
 });

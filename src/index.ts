@@ -9,7 +9,7 @@ export type { Classification } from "./classify.js";
 export { assess } from "./assess.js";
 export { obligationsFor } from "./obligations.js";
 export { checklist } from "./checklist.js";
-export { pretty, keyDateFor } from "./reporters/pretty.js";
+export { pretty } from "./reporters/pretty.js";
 export { toReport } from "./reporters/report.js";
 export { toEvidence } from "./reporters/evidence.js";
 export { generateDocs } from "./docs/templates.js";
@@ -21,10 +21,7 @@ export {
   ANNEX_III_DOMAINS,
   TRANSPARENCY_TRIGGERS,
   TIMELINE,
-  MILESTONES,
   PENALTIES,
   AS_OF,
   timelineAsOf,
-  ANNEX_III_APPLIES,
-  ANNEX_I_APPLIES,
 } from "./knowledge/index.js";

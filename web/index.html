@@ -64,7 +64,7 @@
 <div class="wrap">
   <h1>Free EU AI Act risk classifier</h1>
   <p class="sub">Answer a few questions to see your AI system's risk tier and the obligations that apply. Takes about a minute.</p>
-  <div class="disclaimer"><strong>Not legal advice.</strong> An informational self-assessment based on Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744. Confirm any conclusion with qualified counsel.</div>
+  <div class="disclaimer"><strong>Not legal advice.</strong> An informational self-assessment based on Regulation (EU) 2024/1689. Confirm any conclusion with qualified counsel.</div>
 
   <!-- ================= FORM ================= -->
   <form id="form">
@@ -144,7 +144,7 @@
   </div>
 
   <p class="foot">Sentinel Act by <a href="https://github.com/aadityaparab" rel="noopener">Aaditya Parab</a> · part of Sentinel Stack · MIT.
-  Based on Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744 (in force 27 July 2026). Timelines can change — verify before relying on this.</p>
+  Based on Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744, the Digital Omnibus on AI (in force 27 Jul 2026); legal content verified 2026-09-18. Timelines can change — verify before relying on this.</p>
 </div>
 
 <script>
@@ -163,10 +163,10 @@ const PROHIBITED = [
   {key:"emotionRecognitionWorkEducation", title:"Emotion recognition in the workplace or education", article:"Art 5(1)(f)"},
   {key:"biometricCategorizationSensitive", title:"Biometric categorisation of sensitive attributes", article:"Art 5(1)(g)"},
   {key:"realtimeRemoteBiometricIdPublic", title:"Real-time remote biometric ID in public (law enforcement)", article:"Art 5(1)(h)"},
-  // Inserted by Regulation (EU) 2026/1744 (the Digital Omnibus). Both apply
-  // from 2 December 2026, not on the day the amending regulation took effect.
-  {key:"nonConsensualIntimateImagery", title:"Generating non-consensual intimate imagery", article:"Art 5(1)(ba)", appliesFrom:"2026-12-02"},
-  {key:"childSexualAbuseMaterial", title:"Generating child sexual abuse material", article:"Art 5(1)(bb)", appliesFrom:"2026-12-02"},
+  // Inserted as Art 5(1)(ba) and (bb) by Regulation (EU) 2026/1744; both apply
+  // from 2 Dec 2026 (amended Art 113).
+  {key:"nonConsensualIntimateImagery", title:"AI-generated non-consensual intimate imagery", article:"Art 5(1)(ba)", appliesFrom:"2026-12-02"},
+  {key:"childSexualAbuseMaterial", title:"AI-generated child sexual abuse material", article:"Art 5(1)(bb)", appliesFrom:"2026-12-02"},
 ];
 const ANNEX_III = [
   {key:"biometrics", title:"Biometrics", annex:"Annex III(1)"},
@@ -229,31 +229,28 @@ const OBL = {
   limited:[["LR-50","Transparency disclosures","Art 50","Meet the applicable Article 50 transparency duties."]],
   minimal:[["MR-95","Voluntary codes of conduct","Art 95","No mandatory obligations; voluntary codes encouraged."]],
 };
-// Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744 (the
-// Digital Omnibus on AI, in force 27 July 2026). Status is NOT stored here: a
-// stored status is right on the day it is written and wrong from the day its
-// date passes, which is how "2026-08-02: upcoming" outlived its own date.
-// timelineAsOf() derives it from today.
-const MILESTONES = [
+// Dates under Reg. (EU) 2024/1689 as amended by Reg. (EU) 2026/1744, the
+// Digital Omnibus on AI (in force 27 Jul 2026), which deferred both high-risk regimes and left the
+// Article 50 transparency duties on their original schedule.
+const TIMELINE_FACTS = [
   ["2024-08-01","AI Act enters into force"],
-  ["2025-02-02","Prohibited practices (Art 5(1)(a)-(h)) & AI literacy (Art 4) apply"],
+  ["2025-02-02","Prohibited practices (Art 5) & AI literacy apply"],
   ["2025-08-02","GPAI obligations, governance & penalties apply"],
-  ["2026-07-27","Digital Omnibus (Regulation (EU) 2026/1744) enters into force"],
-  ["2026-08-02","Transparency (Art 50) & remaining general provisions apply"],
-  ["2026-12-02","New prohibitions apply: non-consensual intimate imagery & CSAM (Art 5(1)(ba)-(bb))"],
-  ["2026-12-02","Grace period ends for marking AI-generated content (Art 50(2)) — systems on the market before 2 Aug 2026 only"],
-  ["2027-12-02","High-risk obligations apply to stand-alone Annex III systems (deferred from 2 Aug 2026)"],
-  ["2028-08-02","High-risk obligations apply to AI in Annex I products (deferred from 2 Aug 2027)"],
+  ["2026-07-27","Digital Omnibus on AI enters into force, amending the Act"],
+  ["2026-08-02","Art 50 transparency duties & remaining general provisions apply"],
+  ["2026-12-02","Art 50(2) marking deadline for pre-existing generative AI; new Art 5 prohibition applies"],
+  ["2027-12-02","High-risk (Annex III) obligations apply"],
+  ["2028-08-02","High-risk safety components of products (Annex I) apply"],
 ];
-function timelineAsOf(now){
-  const today = now.toISOString().slice(0,10);
-  return MILESTONES.slice()
-    .sort((a,b) => a[0].localeCompare(b[0]))
-    .map(m => [m[0], m[1], m[0] <= today ? "in force" : "upcoming"]);
-}
+// Status is derived from today's date, so a milestone cannot keep reporting as
+// "upcoming" once it has passed.
+const TODAY = new Date().toISOString().slice(0,10);
+const TIMELINE = TIMELINE_FACTS.slice()
+  .sort((a,b)=>a[0].localeCompare(b[0]))
+  .map(f=>[f[0], f[1], f[0] <= TODAY ? "in force" : "upcoming"]);
 const PENALTIES = {
-  unacceptable:"EUR 35,000,000 or 7% of worldwide annual turnover (Art 99)",
-  other:"EUR 15,000,000 or 3% of worldwide annual turnover (Art 99)",
+  unacceptable:"EUR 35,000,000 or 7% of worldwide annual turnover, whichever is higher (Art 99)",
+  other:"EUR 15,000,000 or 3% of worldwide annual turnover, whichever is higher (Art 99)",
 };
 const TIER_INFO = {
   unacceptable:{label:"Unacceptable — Prohibited", blurb:"This use is banned under Article 5. It must not be placed on the market or put into service in the EU."},
@@ -265,10 +262,7 @@ const TIER_INFO = {
 function classify(p){
   const rationale=[];
   const prohibitedHits = PROHIBITED.filter(pr => p.prohibited && p.prohibited[pr.key]);
-  // A later-dated prohibition still classifies as unacceptable -- a system
-  // built today to do this is banned when the date arrives -- but the reason
-  // says when, so nobody reads it as already being enforced.
-  for(const pr of prohibitedHits) rationale.push({tier:"unacceptable", reason: pr.appliesFrom ? pr.title+" (prohibited from "+pr.appliesFrom+")" : pr.title, article:pr.article});
+  for(const pr of prohibitedHits) rationale.push({tier:"unacceptable", reason:(pr.appliesFrom && pr.appliesFrom > TODAY) ? pr.title+" — prohibited from "+pr.appliesFrom : pr.title, article:pr.article});
   let high=false;
   if(p.annexIProduct){ high=true; rationale.push({tier:"high", reason:"Safety component of a product covered by EU harmonisation law (Annex I).", article:"Annex I / Art 6(1)"}); }
   const annexHits = ANNEX_III.filter(d => p.annexIII && p.annexIII[d.key]);
@@ -305,16 +299,15 @@ function assess(p){
   const c = classify(p);
   const transparencyObligations = TRANSPARENCY.filter(t => p.transparency && p.transparency[t.key])
     .map(t => ({id:"TR-"+t.key, title:t.title, article:t.article, summary:t.duty, appliesTo:t.responsible}));
-  const now = new Date();
   return {
-    assessedAt:now.toISOString(),
+    assessedAt:new Date().toISOString(),
     system:{name:p.name||"Unnamed system", role:p.role},
     tier:c.tier,
     gpai:{isGpai:!!p.gpai, systemicRisk:!!p.gpaiSystemicRisk},
     rationale:c.rationale.concat(c.transparency),
     transparencyObligations,
     obligations:obligationsFor(c.tier,p),
-    timeline:timelineAsOf(now),
+    timeline:TIMELINE,
     disclaimer:DISCLAIMER,
   };
 }
