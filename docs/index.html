@@ -144,7 +144,7 @@
   </div>
 
   <p class="foot">Sentinel Act by <a href="https://github.com/aadityaparab" rel="noopener">Aaditya Parab</a> · part of Sentinel Stack · MIT.
-  Based on Regulation (EU) 2024/1689 as amended by the Digital Omnibus on AI (in force 27 Jul 2026); legal content verified 2026-08-12. Timelines can change — verify before relying on this.</p>
+  Based on Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744, the Digital Omnibus on AI (in force 27 Jul 2026); legal content verified 2026-09-18. Timelines can change — verify before relying on this.</p>
 </div>
 
 <script>
@@ -163,9 +163,10 @@ const PROHIBITED = [
   {key:"emotionRecognitionWorkEducation", title:"Emotion recognition in the workplace or education", article:"Art 5(1)(f)"},
   {key:"biometricCategorizationSensitive", title:"Biometric categorisation of sensitive attributes", article:"Art 5(1)(g)"},
   {key:"realtimeRemoteBiometricIdPublic", title:"Real-time remote biometric ID in public (law enforcement)", article:"Art 5(1)(h)"},
-  // Added by the Digital Omnibus. Sub-paragraph letter omitted: the numbering in
-  // the published text is not yet settled. Applies from 2 Dec 2026.
-  {key:"nonConsensualIntimateImagery", title:"AI-generated non-consensual intimate imagery or CSAM", article:"Art 5 (as amended by the Digital Omnibus)", appliesFrom:"2026-12-02"},
+  // Inserted as Art 5(1)(ba) and (bb) by Regulation (EU) 2026/1744; both apply
+  // from 2 Dec 2026 (amended Art 113).
+  {key:"nonConsensualIntimateImagery", title:"AI-generated non-consensual intimate imagery", article:"Art 5(1)(ba)", appliesFrom:"2026-12-02"},
+  {key:"childSexualAbuseMaterial", title:"AI-generated child sexual abuse material", article:"Art 5(1)(bb)", appliesFrom:"2026-12-02"},
 ];
 const ANNEX_III = [
   {key:"biometrics", title:"Biometrics", annex:"Annex III(1)"},
@@ -228,8 +229,8 @@ const OBL = {
   limited:[["LR-50","Transparency disclosures","Art 50","Meet the applicable Article 50 transparency duties."]],
   minimal:[["MR-95","Voluntary codes of conduct","Art 95","No mandatory obligations; voluntary codes encouraged."]],
 };
-// Dates under Reg. (EU) 2024/1689 as amended by the Digital Omnibus on AI
-// (in force 27 Jul 2026), which deferred both high-risk regimes and left the
+// Dates under Reg. (EU) 2024/1689 as amended by Reg. (EU) 2026/1744, the
+// Digital Omnibus on AI (in force 27 Jul 2026), which deferred both high-risk regimes and left the
 // Article 50 transparency duties on their original schedule.
 const TIMELINE_FACTS = [
   ["2024-08-01","AI Act enters into force"],

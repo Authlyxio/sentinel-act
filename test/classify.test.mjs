@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { readFileSync } from "node:fs";
-import { assess, toEvidence, timelineAsOf, TRANSPARENCY_TRIGGERS } from "../dist/index.js";
+import { assess, toEvidence, timelineAsOf, TRANSPARENCY_TRIGGERS, PROHIBITED_PRACTICES } from "../dist/index.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ex = (f) => JSON.parse(readFileSync(join(here, "..", "examples", f), "utf8"));
@@ -101,18 +101,33 @@ test("Art 50 duties bind providers and deployers only", () => {
 
 // --- New Art 5 prohibition -----------------------------------------------
 
-test("NCII/CSAM => UNACCEPTABLE, flagged as not yet applying", () => {
-  const a = assess({
-    name: "Image generator",
-    role: "provider",
-    prohibited: { nonConsensualIntimateImagery: true },
+// Both apply from 2026-12-02. Before that date the reason must say so rather
+// than assert a ban that is not live; from that date it must not. Asserting
+// only the first made this test a time bomb for 3 December 2026.
+const OMNIBUS_BANS_APPLY = "2026-12-02";
+const bansInForce = new Date().toISOString().slice(0, 10) >= OMNIBUS_BANS_APPLY;
+
+for (const [key, point] of [
+  ["nonConsensualIntimateImagery", "Art 5(1)(ba)"],
+  ["childSexualAbuseMaterial", "Art 5(1)(bb)"],
+]) {
+  test(`${point} => UNACCEPTABLE, with its start date until it applies`, () => {
+    const a = assess({ name: "Image generator", role: "provider", prohibited: { [key]: true } });
+    assert.equal(a.tier, "unacceptable");
+    const r = a.rationale.find((x) => x.citation.article === point);
+    assert.ok(r, `expects a rationale citing ${point}`);
+    assert.equal(/prohibited from 2026-12-02/.test(r.reason), !bansInForce, r.reason);
   });
-  assert.equal(a.tier, "unacceptable");
-  // Applies from 2026-12-02, so today it must not be asserted as already live.
-  assert.ok(
-    a.rationale.some((r) => /prohibited from 2026-12-02/.test(r.reason)),
-    "expects the pending prohibition to state its start date",
-  );
+}
+
+test("every Art 5 prohibition cites a point of Art 5(1)", () => {
+  // 0.2.0 cited the Omnibus bans as "Art 5 (as amended by the Digital
+  // Omnibus)"; each is now its own point, and nothing is cited without one.
+  for (const pr of PROHIBITED_PRACTICES) {
+    assert.match(pr.article, /^Art 5\(1\)\([a-z]{1,2}\)$/, `${pr.key}: ${pr.article}`);
+  }
+  const keys = PROHIBITED_PRACTICES.map((p) => p.key);
+  assert.equal(new Set(keys).size, keys.length, "prohibition keys are unique");
 });
 
 test("high-risk assessment surfaces its own deadline, not just the next global one", () => {

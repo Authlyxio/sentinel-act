@@ -6,7 +6,7 @@ import type { TimelineEntry } from "../types.js";
  * `timelineAsOf`), so a date that passes does not silently go stale; AS_OF
  * records how recently the underlying law itself was re-checked.
  */
-export const AS_OF = "2026-08-12";
+export const AS_OF = "2026-09-18";
 
 /**
  * A dated milestone in the Act's application schedule.
@@ -25,20 +25,21 @@ export interface TimelineFact {
 }
 
 /**
- * Application dates under Regulation (EU) 2024/1689, as amended by the
- * "Digital Omnibus on AI" (in force 27 July 2026), which deferred both
- * high-risk regimes, added a new Article 5 prohibition, and left the
- * Article 50 transparency duties and Article 4 AI-literacy duty untouched.
+ * Application dates under Regulation (EU) 2024/1689, as amended by
+ * Regulation (EU) 2026/1744, the "Digital Omnibus on AI" (in force 27 July
+ * 2026), which deferred both high-risk regimes, added two Article 5
+ * prohibitions (points (ba) and (bb)), and left the Article 50 transparency
+ * duties and Article 4 AI-literacy duty untouched.
  */
 export const TIMELINE_FACTS: TimelineFact[] = [
   { milestone: "AI Act enters into force", date: "2024-08-01" },
   { milestone: "Prohibited practices (Art 5) & AI-literacy duties apply", date: "2025-02-02" },
   { milestone: "GPAI model obligations, governance bodies & penalties apply", date: "2025-08-02" },
   {
-    milestone: "Digital Omnibus on AI enters into force, amending the AI Act",
+    milestone: "Digital Omnibus on AI (Regulation (EU) 2026/1744) enters into force, amending the AI Act",
     date: "2026-07-27",
     note:
-      "Published in the Official Journal 24 Jul 2026. Defers the high-risk regimes (Annex III to 2 Dec 2027, Annex I to 2 Aug 2028) and adds a new Art 5 prohibition. Article 50 transparency and the Art 4 AI-literacy duty are unchanged.",
+      "Published in the Official Journal 24 Jul 2026. Defers the high-risk regimes (Annex III to 2 Dec 2027, Annex I to 2 Aug 2028) and adds two Art 5 prohibitions, points (ba) and (bb). Article 50 transparency and the Art 4 AI-literacy duty are unchanged.",
   },
   {
     milestone: "Art 50 transparency duties & remaining general provisions apply",
@@ -47,10 +48,10 @@ export const TIMELINE_FACTS: TimelineFact[] = [
       "Not deferred by the Digital Omnibus. Enforceable by national market surveillance authorities from this date. Art 50 binds providers and deployers; importers and distributors are within the Act's scope (Art 2) but are not duty-bearers under Art 50.",
   },
   {
-    milestone: "Art 50(2) marking deadline for pre-existing generative AI; new Art 5 prohibition applies",
+    milestone: "Art 50(2) marking deadline for pre-existing generative AI; new Art 5(1)(ba)–(bb) prohibitions apply",
     date: "2026-12-02",
     note:
-      "Two duties land together. (1) Providers of generative AI systems already on the market before 2 Aug 2026 must by now mark outputs in a machine-readable format — this grace period does not extend to systems placed on the market on or after 2 Aug 2026, nor to the Art 50(4) deployer duties, which applied from 2 Aug 2026. (2) The new prohibition on AI-generated non-consensual intimate imagery and CSAM starts to apply.",
+      "Two duties land together. (1) Providers of generative AI systems already on the market before 2 Aug 2026 must by now mark outputs in a machine-readable format — this grace period does not extend to systems placed on the market on or after 2 Aug 2026, nor to the Art 50(4) deployer duties, which applied from 2 Aug 2026. (2) The new prohibitions on AI-generated non-consensual intimate imagery (Art 5(1)(ba)) and child sexual abuse material (Art 5(1)(bb)) start to apply.",
   },
   {
     milestone: "High-risk (Annex III) obligations apply",

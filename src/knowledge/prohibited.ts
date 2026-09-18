@@ -62,15 +62,25 @@ export const PROHIBITED_PRACTICES: ProhibitedPractice[] = [
     article: "Art 5(1)(h)",
     summary: "Real-time remote biometric identification in publicly accessible spaces for law-enforcement purposes, save narrowly defined exceptions.",
   },
+  // Inserted into Art 5(1) as points (ba) and (bb) by Regulation (EU)
+  // 2026/1744 (OJ 24 Jul 2026); both apply from 2 Dec 2026 under the amended
+  // Art 113. 0.2.0 cited them together as "Art 5 (as amended by the Digital
+  // Omnibus)" while the numbering was unconfirmed. They are separate points, so
+  // they are separate entries: a system can be caught by one and not the other.
   {
     key: "nonConsensualIntimateImagery",
-    title: "AI-generated non-consensual intimate imagery or CSAM",
-    // The Digital Omnibus inserts this into Art 5; the sub-paragraph letter is
-    // not cited here because the numbering in the published text is not yet
-    // settled across sources. Verify against the Official Journal before relying on it.
-    article: "Art 5 (as amended by the Digital Omnibus)",
+    title: "AI-generated non-consensual intimate imagery",
+    article: "Art 5(1)(ba)",
     summary:
-      "Placing on the market, putting into service, or using AI systems that generate or manipulate realistic intimate imagery of an identifiable person without their free and explicit consent, or that generate child sexual abuse material. For providers this reaches systems where such output is a reasonably foreseeable and reproducible outcome absent adequate technical safeguards.",
+      "Placing on the market, putting into service, or using AI systems that generate or manipulate realistic intimate imagery of an identifiable person without their free and explicit consent. For providers this reaches systems where such output is a reasonably foreseeable and reproducible outcome absent adequate technical safeguards.",
+    appliesFrom: "2026-12-02",
+  },
+  {
+    key: "childSexualAbuseMaterial",
+    title: "AI-generated child sexual abuse material",
+    article: "Art 5(1)(bb)",
+    summary:
+      "Placing on the market, putting into service, or using AI systems that generate child sexual abuse material within the meaning of Directive 2011/93/EU. For providers this reaches systems where such output is a reasonably foreseeable and reproducible outcome absent adequate technical safeguards.",
     appliesFrom: "2026-12-02",
   },
 ];

@@ -2,6 +2,15 @@
 
 All notable changes are documented here. Format based on Keep a Changelog; versioning follows SemVer.
 
+## [0.2.1] - Unreleased
+
+### Changed
+- **The Omnibus prohibitions are cited by their points.** Regulation (EU) 2026/1744 (OJ 24 Jul 2026) inserts them into Art 5(1) as points **(ba)**, AI-generated non-consensual intimate imagery, and **(bb)**, AI-generated child sexual abuse material; both apply from **2 Dec 2026** under the amended Art 113. 0.2.0 cited them together as "Art 5 (as amended by the Digital Omnibus)" while the numbering was unconfirmed. They are now two entries, so a system can be flagged for one without the other; `ProhibitedKey` gains `childSexualAbuseMaterial`.
+- The Digital Omnibus is named by its regulation number throughout. `AS_OF` → 2026-09-18; knowledge base version → `0.2.1`.
+
+### Fixed
+- **A test that would have started failing on 3 Dec 2026.** The NCII test asserted "prohibited from 2026-12-02" unconditionally, but from that date the ban applies and the reason rightly drops the phrase. It now expects whichever reason is correct on the day it runs.
+
 ## [0.2.0] - 2026-08-12
 
 Legal-currency release. The knowledge base was dated 2026-07-16, which predated

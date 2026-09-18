@@ -11,7 +11,8 @@ export type ProhibitedKey =
   | "emotionRecognitionWorkEducation"
   | "biometricCategorizationSensitive"
   | "realtimeRemoteBiometricIdPublic"
-  | "nonConsensualIntimateImagery";
+  | "nonConsensualIntimateImagery"
+  | "childSexualAbuseMaterial";
 
 export type AnnexIIIKey =
   | "biometrics"

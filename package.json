@@ -1,6 +1,6 @@
 {
   "name": "sentinel-act",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "EU AI Act readiness toolkit — classify an AI system's risk tier, get the obligations that apply, and generate a conformity checklist + starter documentation. CLI + library. Informational, not legal advice.",
   "type": "module",
   "bin": {

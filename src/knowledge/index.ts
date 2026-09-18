@@ -1,6 +1,6 @@
 /** Knowledge-base version. Bump when rules/citations/timeline change. */
 export const KB_VERSION =
-  "0.2.0 — EU AI Act, Regulation (EU) 2024/1689 as amended by the Digital Omnibus on AI (as of 2026-08-12)";
+  "0.2.1 — EU AI Act, Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744 (as of 2026-09-18)";
 
 export { PROHIBITED_PRACTICES } from "./prohibited.js";
 export type { ProhibitedPractice } from "./prohibited.js";
