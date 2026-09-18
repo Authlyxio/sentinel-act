@@ -5,6 +5,12 @@ export interface ProhibitedPractice {
   title: string;
   article: string;
   summary: string;
+  /**
+   * `YYYY-MM-DD`, where the prohibition applies later than Article 5 as a
+   * whole (2 February 2025). Set only for the two points Regulation (EU)
+   * 2026/1744 added, which apply from 2 December 2026.
+   */
+  appliesFrom?: string;
 }
 
 /** Article 5 — prohibited AI practices. Any of these ⇒ Unacceptable risk (banned). */
@@ -56,5 +62,21 @@ export const PROHIBITED_PRACTICES: ProhibitedPractice[] = [
     title: "Real-time remote biometric identification in public (law enforcement)",
     article: "Art 5(1)(h)",
     summary: "Real-time remote biometric identification in publicly accessible spaces for law-enforcement purposes, save narrowly defined exceptions.",
+  },
+  {
+    key: "nonConsensualIntimateImagery",
+    title: "Generating non-consensual intimate imagery",
+    article: "Art 5(1)(ba)",
+    summary:
+      "Generating or manipulating realistic images, video, audio or similar material of an identifiable person's intimate parts, or of an identifiable person engaged in sexually explicit activity, without that person's explicit consent. Inserted by Regulation (EU) 2026/1744.",
+    appliesFrom: "2026-12-02",
+  },
+  {
+    key: "childSexualAbuseMaterial",
+    title: "Generating child sexual abuse material",
+    article: "Art 5(1)(bb)",
+    summary:
+      "Generating or manipulating material within the meaning of Directive 2011/93/EU (child sexual abuse material). Inserted by Regulation (EU) 2026/1744.",
+    appliesFrom: "2026-12-02",
   },
 ];

@@ -1,5 +1,6 @@
-import type { Assessment, RiskTier } from "../types.js";
-import { PENALTIES } from "../knowledge/timeline.js";
+import type { Assessment, RiskTier, TimelineEntry } from "../types.js";
+import { PENALTIES, ANNEX_III_APPLIES, ANNEX_I_APPLIES } from "../knowledge/timeline.js";
+import { PROHIBITED_PRACTICES } from "../knowledge/prohibited.js";
 
 const C: Record<string, string> = {
   reset: "\x1b[0m",
@@ -53,12 +54,44 @@ export function pretty(a: Assessment, color = true): string {
   }
 
   out.push("");
-  const next = a.timeline.find((t) => t.status === "upcoming");
-  if (next) out.push(p(`key date:  ${next.date} — ${next.milestone}`, C.dim));
+  const key = keyDateFor(a);
+  if (key) out.push(p(`key date:  ${key.date} — ${key.milestone}`, C.dim));
   const pen = a.tier === "unacceptable" ? PENALTIES[0] : a.tier === "minimal" ? null : PENALTIES[1];
   if (pen) out.push(p(`max penalty:  ${pen.max} (${pen.article})`, C.dim));
 
   out.push("");
   out.push(p("! " + a.disclaimer, C.yellow));
   return out.join("\n");
+}
+
+/**
+ * The date that matters for THIS system, not simply the next date on the list.
+ *
+ * "The next upcoming milestone" used to be the answer, and it happened to be
+ * right while the next milestone was the high-risk date. Once the Digital
+ * Omnibus moved that date and added two prohibitions on an earlier one, the
+ * next milestone for an employment screener became "non-consensual intimate
+ * imagery is prohibited" — true, dated, and irrelevant to the reader.
+ *
+ * So: a high-risk system gets its own high-risk date (Annex I products later
+ * than stand-alone Annex III); a system caught by a prohibition that has its
+ * own later date gets that date; anything else gets the next upcoming one.
+ */
+export function keyDateFor(a: Assessment): TimelineEntry | undefined {
+  const at = (date: string) => a.timeline.find((t) => t.date === date);
+  if (a.tier === "high") {
+    const annexI = a.rationale.some((r) => r.citation.article.includes("Annex I /"));
+    return at(annexI ? ANNEX_I_APPLIES : ANNEX_III_APPLIES);
+  }
+  if (a.tier === "unacceptable") {
+    const later = PROHIBITED_PRACTICES
+      .filter((pr) => pr.appliesFrom && a.rationale.some((r) => r.citation.article === pr.article))
+      .map((pr) => pr.appliesFrom as string)
+      .sort()[0];
+    if (later) {
+      const dated = a.timeline.find((t) => t.date === later && t.milestone.includes("prohibitions"));
+      if (dated && dated.status === "upcoming") return dated;
+    }
+  }
+  return a.timeline.find((t) => t.status === "upcoming");
 }

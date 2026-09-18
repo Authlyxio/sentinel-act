@@ -21,7 +21,12 @@ export function classify(p: SystemProfile): Classification {
   // 1. Unacceptable risk (Article 5)
   const prohibitedHits = PROHIBITED_PRACTICES.filter((pr) => p.prohibited?.[pr.key]);
   for (const pr of prohibitedHits) {
-    rationale.push({ tier: "unacceptable", reason: pr.title, citation: { article: pr.article, label: pr.title } });
+    // A prohibition with its own later date still classifies as unacceptable —
+    // this is a readiness tool, and a system built today to do this will be
+    // banned when the date arrives — but the reason says when, so nobody reads
+    // it as already being enforced.
+    const reason = pr.appliesFrom ? `${pr.title} (prohibited from ${pr.appliesFrom})` : pr.title;
+    rationale.push({ tier: "unacceptable", reason, citation: { article: pr.article, label: pr.title } });
   }
 
   // 2. High risk (Annex I products, or Annex III domains subject to the Art 6(3) exemption)

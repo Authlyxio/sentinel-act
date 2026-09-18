@@ -15,7 +15,7 @@ npx sentinel-act assess my-system.json
 ```
 
 ```
-sentinel-act  0.1.0 — EU AI Act, Regulation (EU) 2024/1689 (as of 2026-07-16)
+sentinel-act  0.2.0 — EU AI Act, Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744 (as of 2026-09-18)
 system: AI Hiring Screener  ·  role: provider
 
 risk tier:   HIGH RISK
@@ -30,7 +30,7 @@ obligations that apply (14):
   [Art 47] EU declaration of conformity
   [Art 49] Registration in the EU database
   ... 
-key date:  2026-08-02 — High-risk (Annex III) & most remaining provisions apply
+key date:  2027-12-02 — High-risk obligations apply to stand-alone Annex III systems
 max penalty:  €15,000,000 or 3% of worldwide annual turnover (Art 99)
 ```
 
@@ -104,7 +104,11 @@ Precedence: **Unacceptable → High → Limited → Minimal**. An Annex III syst
 
 ## Accuracy & sources
 
-Built from Regulation (EU) 2024/1689 and its Annexes. Primary references: the [EU Artificial Intelligence Act text](https://artificialintelligenceact.eu/the-act/) and [EUR-Lex](https://eur-lex.europa.eu/eli/reg/2024/1689/oj). **Timeline note:** high-risk (Annex III) obligations apply **2 Aug 2026** under the Regulation; the *Digital Omnibus* (provisional political agreement, 7 May 2026, pending formal adoption) proposes deferring them to **2 Dec 2027**. Both are encoded, dated, and flagged. The knowledge base carries an `AS_OF` date — re-check before relying on it.
+Built from Regulation (EU) 2024/1689 and its Annexes, as amended by [Regulation (EU) 2026/1744](https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng) — the *Digital Omnibus on AI*, published in the Official Journal on 24 July 2026 and in force since 27 July 2026. Primary references: the [EU Artificial Intelligence Act text](https://artificialintelligenceact.eu/the-act/) and [EUR-Lex](https://eur-lex.europa.eu/eli/reg/2024/1689/oj).
+
+**Timeline note.** The Omnibus deferred the high-risk regime — stand-alone Annex III systems to **2 Dec 2027**, AI in Annex I products to **2 Aug 2028** — and left Article 5, the GPAI duties and Article 50 transparency where they were. It also added two Article 5 prohibitions (non-consensual intimate imagery, and child sexual abuse material) that apply from **2 Dec 2026**, and a grace period to the same date for marking AI-generated content, **only** for generative systems already on the market before 2 Aug 2026.
+
+Each milestone's status — in force or upcoming — is worked out from its date on the day you run an assessment, not stored. A stored status is right on the day it is written and wrong from the day its date passes; that is how 0.1.0 came to show "2 Aug 2026: upcoming" after the date had gone by. The knowledge base still carries an `AS_OF` date for the law it encodes — re-check before relying on it.
 
 ## Roadmap
 
